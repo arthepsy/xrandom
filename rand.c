@@ -29,25 +29,11 @@
  * Posix rand_r function added May 1999 by Wes Peters <wes@softweyr.com>.
  */
 
-#if defined(LIBC_SCCS) && !defined(lint)
-static char sccsid[] = "@(#)rand.c	8.1 (Berkeley) 6/14/93";
-#endif /* LIBC_SCCS and not lint */
-#include <sys/cdefs.h>
-__FBSDID("$FreeBSD: stable/10/lib/libc/stdlib/rand.c 252698 2013-07-04 12:35:39Z ache $");
-
-#include "namespace.h"
 #include <sys/param.h>
-#include <sys/sysctl.h>
-#include <sys/types.h>
-#include <stdlib.h>
-#include "un-namespace.h"
-
-#ifdef TEST
-#include <stdio.h>
-#endif /* TEST */
+#include "fbsd-random.h"
 
 static int
-do_rand(unsigned long *ctx)
+fbsd_do_rand(unsigned long *ctx)
 {
 #ifdef  USE_WEAK_SEEDING
 /*
@@ -81,7 +67,7 @@ do_rand(unsigned long *ctx)
 
 
 int
-rand_r(unsigned int *ctx)
+fbsd_rand_r(unsigned int *ctx)
 {
 	u_long val;
 	int r;
@@ -92,7 +78,7 @@ rand_r(unsigned int *ctx)
 	/* Transform to [1, 0x7ffffffe] range. */
 	val = (*ctx % 0x7ffffffe) + 1;
 #endif
-	r = do_rand(&val);
+	r = fbsd_do_rand(&val);
 
 #ifdef  USE_WEAK_SEEDING
 	*ctx = (unsigned int)val;
@@ -111,13 +97,13 @@ static u_long next =
 #endif
 
 int
-rand()
+fbsd_rand()
 {
-	return (do_rand(&next));
+	return (fbsd_do_rand(&next));
 }
 
 void
-srand(seed)
+fbsd_srand(seed)
 u_int seed;
 {
 	next = seed;
@@ -126,58 +112,3 @@ u_int seed;
 	next = (next % 0x7ffffffe) + 1;
 #endif
 }
-
-
-/*
- * sranddev:
- *
- * Many programs choose the seed value in a totally predictable manner.
- * This often causes problems.  We seed the generator using pseudo-random
- * data from the kernel.
- */
-void
-sranddev()
-{
-	int mib[2];
-	size_t len;
-
-	len = sizeof(next);
-
-	mib[0] = CTL_KERN;
-	mib[1] = KERN_ARND;
-	sysctl(mib, 2, (void *)&next, &len, NULL, 0);
-#ifndef USE_WEAK_SEEDING
-	/* Transform to [1, 0x7ffffffe] range. */
-	next = (next % 0x7ffffffe) + 1;
-#endif
-}
-
-
-#ifdef TEST
-
-main()
-{
-    int i;
-    unsigned myseed;
-
-    printf("seeding rand with 0x19610910: \n");
-    srand(0x19610910);
-
-    printf("generating three pseudo-random numbers:\n");
-    for (i = 0; i < 3; i++)
-    {
-	printf("next random number = %d\n", rand());
-    }
-
-    printf("generating the same sequence with rand_r:\n");
-    myseed = 0x19610910;
-    for (i = 0; i < 3; i++)
-    {
-	printf("next random number = %d\n", rand_r(&myseed));
-    }
-
-    return 0;
-}
-
-#endif /* TEST */
-

@@ -27,19 +27,10 @@
  * SUCH DAMAGE.
  */
 
-#if defined(LIBC_SCCS) && !defined(lint)
-static char sccsid[] = "@(#)random.c	8.2 (Berkeley) 5/19/95";
-#endif /* LIBC_SCCS and not lint */
-#include <sys/cdefs.h>
-__FBSDID("$FreeBSD: stable/10/lib/libc/stdlib/random.c 251672 2013-06-13 00:19:30Z emaste $");
-
-#include "namespace.h"
 #include <sys/param.h>
-#include <sys/sysctl.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include "un-namespace.h"
+#include "fbsd-random.h"
 
 /*
  * random.c:
@@ -216,7 +207,7 @@ static int rand_sep = SEP_3;
 static uint32_t *end_ptr = &randtbl[DEG_3 + 1];
 
 static inline uint32_t
-good_rand(int32_t x)
+fbsd_good_rand(int32_t x)
 {
 #ifdef  USE_WEAK_SEEDING
 /*
@@ -261,7 +252,7 @@ good_rand(int32_t x)
  * for default usage relies on values produced by this routine.
  */
 void
-srandom(unsigned long x)
+fbsd_srandom(unsigned long x)
 {
 	int i, lim;
 
@@ -270,46 +261,13 @@ srandom(unsigned long x)
 		lim = NSHUFF;
 	else {
 		for (i = 1; i < rand_deg; i++)
-			state[i] = good_rand(state[i - 1]);
+			state[i] = fbsd_good_rand(state[i - 1]);
 		fptr = &state[rand_sep];
 		rptr = &state[0];
 		lim = 10 * rand_deg;
 	}
 	for (i = 0; i < lim; i++)
-		(void)random();
-}
-
-/*
- * srandomdev:
- *
- * Many programs choose the seed value in a totally predictable manner.
- * This often causes problems.  We seed the generator using pseudo-random
- * data from the kernel.
- *
- * Note that this particular seeding procedure can generate states
- * which are impossible to reproduce by calling srandom() with any
- * value, since the succeeding terms in the state buffer are no longer
- * derived from the LC algorithm applied to a fixed seed.
- */
-void
-srandomdev(void)
-{
-	int mib[2];
-	size_t len;
-
-	if (rand_type == TYPE_0)
-		len = sizeof(state[0]);
-	else
-		len = rand_deg * sizeof(state[0]);
-
-	mib[0] = CTL_KERN;
-	mib[1] = KERN_ARND;
-	sysctl(mib, 2, state, &len, NULL, 0);
-
-	if (rand_type != TYPE_0) {
-		fptr = &state[rand_sep];
-		rptr = &state[0];
-	}
+		(void)fbsd_random();
 }
 
 /*
@@ -336,7 +294,7 @@ srandomdev(void)
  * complain about mis-alignment, but you should disregard these messages.
  */
 char *
-initstate(unsigned long seed, char *arg_state, long n)
+fbsd_initstate(unsigned long seed, char *arg_state, long n)
 {
 	char *ostate = (char *)(&state[-1]);
 	uint32_t *int_arg_state = (uint32_t *)arg_state;
@@ -373,7 +331,7 @@ initstate(unsigned long seed, char *arg_state, long n)
 	}
 	state = int_arg_state + 1; /* first location */
 	end_ptr = &state[rand_deg];	/* must set end_ptr before srandom */
-	srandom(seed);
+	fbsd_srandom(seed);
 	if (rand_type == TYPE_0)
 		int_arg_state[0] = rand_type;
 	else
@@ -401,7 +359,7 @@ initstate(unsigned long seed, char *arg_state, long n)
  * complain about mis-alignment, but you should disregard these messages.
  */
 char *
-setstate(char *arg_state)
+fbsd_setstate(char *arg_state)
 {
 	uint32_t *new_state = (uint32_t *)arg_state;
 	uint32_t type = new_state[0] % MAX_TYPES;
@@ -453,14 +411,14 @@ setstate(char *arg_state)
  * Returns a 31-bit random number.
  */
 long
-random(void)
+fbsd_random(void)
 {
 	uint32_t i;
 	uint32_t *f, *r;
 
 	if (rand_type == TYPE_0) {
 		i = state[0];
-		state[0] = i = (good_rand(i)) & 0x7fffffff;
+		state[0] = i = (fbsd_good_rand(i)) & 0x7fffffff;
 	} else {
 		/*
 		 * Use local variables rather than static variables for speed.
