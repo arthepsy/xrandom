@@ -30,7 +30,7 @@
 #include <sys/param.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "fbsd-random.h"
+#include "freebsd-random.h"
 
 /*
  * random.c:
@@ -207,7 +207,7 @@ static int rand_sep = SEP_3;
 static uint32_t *end_ptr = &randtbl[DEG_3 + 1];
 
 static inline uint32_t
-fbsd_good_rand(int32_t x)
+freebsd_good_rand(int32_t x)
 {
 #ifdef  USE_WEAK_SEEDING
 /*
@@ -252,7 +252,7 @@ fbsd_good_rand(int32_t x)
  * for default usage relies on values produced by this routine.
  */
 void
-fbsd_srandom(unsigned long x)
+freebsd_srandom(unsigned long x)
 {
 	int i, lim;
 
@@ -261,13 +261,13 @@ fbsd_srandom(unsigned long x)
 		lim = NSHUFF;
 	else {
 		for (i = 1; i < rand_deg; i++)
-			state[i] = fbsd_good_rand(state[i - 1]);
+			state[i] = freebsd_good_rand(state[i - 1]);
 		fptr = &state[rand_sep];
 		rptr = &state[0];
 		lim = 10 * rand_deg;
 	}
 	for (i = 0; i < lim; i++)
-		(void)fbsd_random();
+		(void)freebsd_random();
 }
 
 /*
@@ -294,7 +294,7 @@ fbsd_srandom(unsigned long x)
  * complain about mis-alignment, but you should disregard these messages.
  */
 char *
-fbsd_initstate(unsigned long seed, char *arg_state, long n)
+freebsd_initstate(unsigned long seed, char *arg_state, long n)
 {
 	char *ostate = (char *)(&state[-1]);
 	uint32_t *int_arg_state = (uint32_t *)arg_state;
@@ -331,7 +331,7 @@ fbsd_initstate(unsigned long seed, char *arg_state, long n)
 	}
 	state = int_arg_state + 1; /* first location */
 	end_ptr = &state[rand_deg];	/* must set end_ptr before srandom */
-	fbsd_srandom(seed);
+	freebsd_srandom(seed);
 	if (rand_type == TYPE_0)
 		int_arg_state[0] = rand_type;
 	else
@@ -359,7 +359,7 @@ fbsd_initstate(unsigned long seed, char *arg_state, long n)
  * complain about mis-alignment, but you should disregard these messages.
  */
 char *
-fbsd_setstate(char *arg_state)
+freebsd_setstate(char *arg_state)
 {
 	uint32_t *new_state = (uint32_t *)arg_state;
 	uint32_t type = new_state[0] % MAX_TYPES;
@@ -411,14 +411,14 @@ fbsd_setstate(char *arg_state)
  * Returns a 31-bit random number.
  */
 long
-fbsd_random(void)
+freebsd_random(void)
 {
 	uint32_t i;
 	uint32_t *f, *r;
 
 	if (rand_type == TYPE_0) {
 		i = state[0];
-		state[0] = i = (fbsd_good_rand(i)) & 0x7fffffff;
+		state[0] = i = (freebsd_good_rand(i)) & 0x7fffffff;
 	} else {
 		/*
 		 * Use local variables rather than static variables for speed.

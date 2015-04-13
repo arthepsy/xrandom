@@ -30,10 +30,10 @@
  */
 
 #include <sys/param.h>
-#include "fbsd-random.h"
+#include "freebsd-random.h"
 
 static int
-fbsd_do_rand(unsigned long *ctx)
+freebsd_do_rand(unsigned long *ctx)
 {
 #ifdef  USE_WEAK_SEEDING
 /*
@@ -67,7 +67,7 @@ fbsd_do_rand(unsigned long *ctx)
 
 
 int
-fbsd_rand_r(unsigned int *ctx)
+freebsd_rand_r(unsigned int *ctx)
 {
 	u_long val;
 	int r;
@@ -78,7 +78,7 @@ fbsd_rand_r(unsigned int *ctx)
 	/* Transform to [1, 0x7ffffffe] range. */
 	val = (*ctx % 0x7ffffffe) + 1;
 #endif
-	r = fbsd_do_rand(&val);
+	r = freebsd_do_rand(&val);
 
 #ifdef  USE_WEAK_SEEDING
 	*ctx = (unsigned int)val;
@@ -97,13 +97,13 @@ static u_long next =
 #endif
 
 int
-fbsd_rand()
+freebsd_rand()
 {
-	return (fbsd_do_rand(&next));
+	return (freebsd_do_rand(&next));
 }
 
 void
-fbsd_srand(seed)
+freebsd_srand(seed)
 u_int seed;
 {
 	next = seed;
