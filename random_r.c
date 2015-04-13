@@ -55,6 +55,7 @@
 #include <limits.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include "glibc-random.h"
 
 
 /* An improved random number generation package.  In addition to the standard
@@ -215,7 +216,6 @@ __srandom_r (seed, buf)
   return -1;
 }
 
-weak_alias (__srandom_r, srandom_r)
 
 /* Initialize the state information in the given array of N bytes for
    future random number generation.  Based on the number of bytes we
@@ -286,7 +286,6 @@ __initstate_r (seed, arg_state, n, buf)
   return -1;
 }
 
-weak_alias (__initstate_r, initstate_r)
 
 /* Restore the state from the given state array.
    Note: It is important that we also remember the locations of the pointers
@@ -343,7 +342,6 @@ __setstate_r (arg_state, buf)
   return -1;
 }
 
-weak_alias (__setstate_r, setstate_r)
 
 /* If we are using the trivial TYPE_0 R.N.G., just do the old linear
    congruential bit.  Otherwise, we do our fancy trinomial stuff, which is the
@@ -407,4 +405,3 @@ __random_r (buf, result)
   return -1;
 }
 
-weak_alias (__random_r, random_r)

@@ -50,10 +50,10 @@
    OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
    SUCH DAMAGE.*/
 
-#include <bits/libc-lock.h>
 #include <limits.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include "glibc-random.h"
 
 
 /* An improved random number generation package.  In addition to the standard
@@ -194,7 +194,7 @@ static struct random_data unsafe_state =
 /* POSIX.1c requires that there is mutual exclusion for the `rand' and
    `srand' functions to prevent concurrent calls from modifying common
    data.  */
-__libc_lock_define_initialized (static, lock)
+//__libc_lock_define_initialized (static, lock)
 
 /* Initialize the random number generator based on the given seed.  If the
    type is the trivial no-state-information type, just remember the seed.
@@ -208,13 +208,11 @@ void
 __srandom (x)
      unsigned int x;
 {
-  __libc_lock_lock (lock);
+//  __libc_lock_lock (lock);
   (void) __srandom_r (x, &unsafe_state);
-  __libc_lock_unlock (lock);
+//  __libc_lock_unlock (lock);
 }
 
-weak_alias (__srandom, srandom)
-weak_alias (__srandom, srand)
 
 /* Initialize the state information in the given array of N bytes for
    future random number generation.  Based on the number of bytes we
@@ -236,18 +234,17 @@ __initstate (seed, arg_state, n)
   int32_t *ostate;
   int ret;
 
-  __libc_lock_lock (lock);
+//  __libc_lock_lock (lock);
 
   ostate = &unsafe_state.state[-1];
 
   ret = __initstate_r (seed, arg_state, n, &unsafe_state);
 
-  __libc_lock_unlock (lock);
+//  __libc_lock_unlock (lock);
 
   return ret == -1 ? NULL : (char *) ostate;
 }
 
-weak_alias (__initstate, initstate)
 
 /* Restore the state from the given state array.
    Note: It is important that we also remember the locations of the pointers
@@ -263,19 +260,18 @@ __setstate (arg_state)
 {
   int32_t *ostate;
 
-  __libc_lock_lock (lock);
+//  __libc_lock_lock (lock);
 
   ostate = &unsafe_state.state[-1];
 
   if (__setstate_r (arg_state, &unsafe_state) < 0)
     ostate = NULL;
 
-  __libc_lock_unlock (lock);
+//  __libc_lock_unlock (lock);
 
   return (char *) ostate;
 }
 
-weak_alias (__setstate, setstate)
 
 /* If we are using the trivial TYPE_0 R.N.G., just do the old linear
    congruential bit.  Otherwise, we do our fancy trinomial stuff, which is the
@@ -293,13 +289,12 @@ __random (void)
 {
   int32_t retval;
 
-  __libc_lock_lock (lock);
+//  __libc_lock_lock (lock);
 
   (void) __random_r (&unsafe_state, &retval);
 
-  __libc_lock_unlock (lock);
+//  __libc_lock_unlock (lock);
 
   return retval;
 }
 
-weak_alias (__random, random)
