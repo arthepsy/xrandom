@@ -298,3 +298,6 @@ __random (void)
   return retval;
 }
 
+extern void glibc_srand(unsigned int) __attribute__((alias("__srandom")));
+extern void glibc_srandom(unsigned int) __attribute__((alias("__srandom")));
+extern long int glibc_random(void) __attribute__((alias("__random")));
