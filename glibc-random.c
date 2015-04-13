@@ -157,7 +157,7 @@ static int32_t randtbl[DEG_3 + 1] =
   };
 
 
-static struct random_data unsafe_state =
+static struct glibc_random_data unsafe_state =
   {
 /* FPTR and RPTR are two pointers into the state info, a front and a rear
    pointer.  These two pointers are always rand_sep places apart, as they

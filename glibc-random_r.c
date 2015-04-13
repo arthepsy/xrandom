@@ -161,7 +161,7 @@ static const struct random_poly_info random_poly_info =
 int
 glibc_srandom_r (seed, buf)
      unsigned int seed;
-     struct random_data *buf;
+     struct glibc_random_data *buf;
 {
   int type;
   int32_t *state;
@@ -233,7 +233,7 @@ glibc_initstate_r (seed, arg_state, n, buf)
      unsigned int seed;
      char *arg_state;
      size_t n;
-     struct random_data *buf;
+     struct glibc_random_data *buf;
 {
   if (buf == NULL)
     goto fail;
@@ -298,7 +298,7 @@ glibc_initstate_r (seed, arg_state, n, buf)
 int
 glibc_setstate_r (arg_state, buf)
      char *arg_state;
-     struct random_data *buf;
+     struct glibc_random_data *buf;
 {
   int32_t *new_state = 1 + (int32_t *) arg_state;
   int type;
@@ -356,7 +356,7 @@ glibc_setstate_r (arg_state, buf)
 
 int
 glibc_random_r (buf, result)
-     struct random_data *buf;
+     struct glibc_random_data *buf;
      int32_t *result;
 {
   int32_t *state;
