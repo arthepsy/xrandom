@@ -53,7 +53,7 @@
 #include <limits.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include "glibc-random.h"
+#include "glibc-random-internal.h"
 
 
 /* An improved random number generation package.  In addition to the standard
