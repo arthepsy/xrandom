@@ -205,11 +205,11 @@ static struct random_data unsafe_state =
    introduced by the L.C.R.N.G.  Note that the initialization of randtbl[]
    for default usage relies on values produced by this routine.  */
 void
-__srandom (x)
+glibc_srandom (x)
      unsigned int x;
 {
 //  __libc_lock_lock (lock);
-  (void) __srandom_r (x, &unsafe_state);
+  (void) glibc_srandom_r (x, &unsafe_state);
 //  __libc_lock_unlock (lock);
 }
 
@@ -226,7 +226,7 @@ __srandom (x)
    setstate so that it doesn't matter when initstate is called.
    Returns a pointer to the old state.  */
 char *
-__initstate (seed, arg_state, n)
+glibc_initstate (seed, arg_state, n)
      unsigned int seed;
      char *arg_state;
      size_t n;
@@ -238,7 +238,7 @@ __initstate (seed, arg_state, n)
 
   ostate = &unsafe_state.state[-1];
 
-  ret = __initstate_r (seed, arg_state, n, &unsafe_state);
+  ret = glibc_initstate_r (seed, arg_state, n, &unsafe_state);
 
 //  __libc_lock_unlock (lock);
 
@@ -255,7 +255,7 @@ __initstate (seed, arg_state, n)
    same state as the current state
    Returns a pointer to the old state information.  */
 char *
-__setstate (arg_state)
+glibc_setstate (arg_state)
      char *arg_state;
 {
   int32_t *ostate;
@@ -264,7 +264,7 @@ __setstate (arg_state)
 
   ostate = &unsafe_state.state[-1];
 
-  if (__setstate_r (arg_state, &unsafe_state) < 0)
+  if (glibc_setstate_r (arg_state, &unsafe_state) < 0)
     ostate = NULL;
 
 //  __libc_lock_unlock (lock);
@@ -285,19 +285,17 @@ __setstate (arg_state)
    pointer if the front one has wrapped.  Returns a 31-bit random number.  */
 
 long int
-__random (void)
+glibc_random (void)
 {
   int32_t retval;
 
 //  __libc_lock_lock (lock);
 
-  (void) __random_r (&unsafe_state, &retval);
+  (void) glibc_random_r (&unsafe_state, &retval);
 
 //  __libc_lock_unlock (lock);
 
   return retval;
 }
 
-extern void glibc_srand(unsigned int) __attribute__((alias("__srandom")));
-extern void glibc_srandom(unsigned int) __attribute__((alias("__srandom")));
-extern long int glibc_random(void) __attribute__((alias("__random")));
+extern void glibc_srand(unsigned int) __attribute__((alias("glibc_srandom")));

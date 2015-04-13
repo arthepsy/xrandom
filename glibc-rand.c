@@ -18,14 +18,9 @@
 #include <stdlib.h>
 #include "glibc-random-internal.h"
 
-#undef	rand
-
-
 /* Return a random integer between 0 and RAND_MAX.  */
 int
-__rand (void)
+glibc_rand (void)
 {
-  return (int) __random ();
+  return (int) glibc_random ();
 }
-
-extern long int glibc_rand(void) __attribute__((alias("__rand")));

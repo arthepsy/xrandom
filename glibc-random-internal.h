@@ -13,10 +13,14 @@ struct random_data
     int32_t *end_ptr;           /* Pointer behind state table.  */
   };
 // random_r.h
-int __srandom_r (unsigned int seed, struct random_data *buf);
-int __initstate_r (unsigned int seed, char *arg_state, size_t n, struct random_data *buf);
-int __setstate_r (char *arg_state, struct random_data *buf);
-int __random_r (struct random_data *buf, int32_t *result);
+int glibc_srandom_r (unsigned int seed, struct random_data *buf);
+int glibc_random_r (struct random_data *buf, int32_t *result);
+int glibc_initstate_r (unsigned int seed, char *arg_state, size_t n, struct random_data *buf);
+int glibc_setstate_r (char *arg_state, struct random_data *buf);
 // random_r.h
-void __srandom (unsigned int x);
-long int __random (void);
+void glibc_srandom (unsigned int x);
+long int glibc_random (void);
+char * glibc_initstate (unsigned int seed, char *arg_state, size_t n);
+char * glibc_setstate (char *arg_state);
+// rand.h
+int glibc_rand (void);
