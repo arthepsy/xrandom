@@ -1,3 +1,4 @@
+#define GLIBC_RAND_MAX	2147483647
 void glibc_srandom (unsigned int x);
 long int glibc_random (void);
 void glibc_srand (unsigned int x);

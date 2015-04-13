@@ -1,4 +1,5 @@
 // common
+#define GLIBC_RAND_MAX	2147483647
 #define __set_errno(ev) ((errno) = (ev))
 typedef __int32_t int32_t;
 

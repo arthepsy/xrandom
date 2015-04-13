@@ -190,13 +190,13 @@ glibc_srandom_r (seed, buf)
   for (i = 1; i < kc; ++i)
     {
       /* This does:
-	   state[i] = (16807 * state[i - 1]) % 2147483647;
+	   state[i] = (16807 * state[i - 1]) % GLIBC_RAND_MAX;
 	 but avoids overflowing 31 bits.  */
       long int hi = word / 127773;
       long int lo = word % 127773;
       word = 16807 * lo - 2836 * hi;
       if (word < 0)
-	word += 2147483647;
+	word += GLIBC_RAND_MAX;
       *++dst = word;
     }
 

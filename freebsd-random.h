@@ -1,3 +1,4 @@
+#define	FREEBSD_RAND_MAX	0x7ffffffd
 void freebsd_srandom (unsigned long x);
 long freebsd_random (void);
 void freebsd_srand (unsigned int seed);

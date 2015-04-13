@@ -41,7 +41,7 @@ freebsd_do_rand(unsigned long *ctx)
  * The random sequences do not vary much with the seed,
  * even with overflowing.
  */
-	return ((*ctx = *ctx * 1103515245 + 12345) % ((u_long)RAND_MAX + 1));
+	return ((*ctx = *ctx * 1103515245 + 12345) % ((u_long)FREEBSD_RAND_MAX + 1));
 #else   /* !USE_WEAK_SEEDING */
 /*
  * Compute x = (7^5 * x) mod (2^31 - 1)
