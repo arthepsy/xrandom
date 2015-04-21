@@ -32,16 +32,6 @@ void test_freebsd_rand(int len, int seed, int * rv)
 	}
 }
 
-void test_freebsd_rand_r(int len, int seed, int * rv)
-{
-	unsigned int useed = seed;
-	for (int i=0; i < len; i++) {
-		int rnd = freebsd_rand_r(&useed);
-		printf("freebsd_rand_r (%s:%d) = %s vs %s\n", _gvs(seed), i, _gvs(rnd), _gvs(rv[i]));
-		assert(rnd == rv[i]);
-	}
-}
-
 void test_linux_random(int len, int seed, long * rv)
 {
 	linux_srandom(seed);
@@ -85,11 +75,6 @@ int main() {
 	test_freebsd_rand(3, imax,       (int[]){ 33613,      564950497,  1097816498 });
 	test_freebsd_rand(3, imax + 1,   (int[]){ 50420,      847425746,  572982924  });
 	test_freebsd_rand(3, custom,     (int[]){ 2064185557, 168356020,  1323681847 });
-	
-	test_freebsd_rand_r(3, 0,        (int[]){ 16806,      282475248,  1622650072 });
-	test_freebsd_rand_r(3, imax,     (int[]){ 33613,      564950497,  1097816498 });
-	test_freebsd_rand_r(3, imax + 1, (int[]){ 50420,      847425746,  572982924  });
-	test_freebsd_rand_r(3, custom,   (int[]){ 2064185557, 168356020,  1323681847 });
 	
 	test_linux_random(3, 0,         (long[]){ 1804289383,  846930886, 1681692777 });
 	test_linux_random(3, imax,      (long[]){ 1065668062, 2142264300, 1066566375 });
