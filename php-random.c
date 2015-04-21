@@ -17,11 +17,11 @@
 #include "xrandom.h"
 #include "php-random.h"
 
-i32 php_rand_32(enum php_rand_type rand_type, i32 seed, int nth, i32 min, i32 max)
+zend_i32 php_rand_32(enum php_rand_type rand_type, zend_i32 seed, int nth, zend_i32 min, zend_i32 max)
 {
-	i32 rnd = 0;
-	i32 rmax = 0;
-	ui32 useed = 0;
+	zend_i32 rnd = 0;
+	zend_i32 rmax = 0;
+	zend_ui32 useed = 0;
 	int c = -1;
 	
 	if (nth < 0) {
@@ -94,11 +94,11 @@ i32 php_rand_32(enum php_rand_type rand_type, i32 seed, int nth, i32 min, i32 ma
 	return rnd;
 }
 
-i64 php_rand_64(enum php_rand_type rand_type, i64 seed, int nth, i64 min, i64 max)
+zend_i64 php_rand_64(enum php_rand_type rand_type, zend_i64 seed, int nth, zend_i64 min, zend_i64 max)
 {
-	i64 rnd = 0;
-	i64 rmax = 0;
-	ui32 useed = 0;
+	zend_i64 rnd = 0;
+	zend_i64 rmax = 0;
+	zend_ui32 useed = 0;
 	int c = -1;
 	
 	if (nth < 0) {
