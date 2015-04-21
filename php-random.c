@@ -87,7 +87,7 @@ zend_i32 php_rand_32(enum php_rand_type rand_type, zend_i32 seed, int nth, zend_
 			default:
 				break;
 		}
-		if (min != 0 && max != 0) {
+		if (min != 0 || max != 0) {
 			rnd = PHP_RANGED_RAND(rnd, min, max, rmax);
 		}
 	}
@@ -164,7 +164,7 @@ zend_i64 php_rand_64(enum php_rand_type rand_type, zend_i64 seed, int nth, zend_
 			default:
 				break;
 		}
-		if (min != 0 && max != 0) {
+		if (min != 0 || max != 0) {
 			rnd = PHP_RANGED_RAND(rnd, min, max, rmax);
 		}
 	}
