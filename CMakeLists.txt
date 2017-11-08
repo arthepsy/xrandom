@@ -12,8 +12,9 @@ add_test(test-php-xrandom test-php-xrandom)
 
 add_library(freebsd-random freebsd-rand.c freebsd-random.c)
 add_library(linux-random glibc-rand.c glibc-rand_r.c glibc-random.c glibc-random_r.c)
+add_library(solaris-random solaris-random.c)
 add_library(ixrandom INTERFACE)
-target_link_libraries(ixrandom INTERFACE freebsd-random linux-random)
+target_link_libraries(ixrandom INTERFACE freebsd-random linux-random solaris-random)
 
 add_library(php-random php-random.c)
 target_link_libraries(php-random ixrandom)
