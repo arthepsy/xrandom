@@ -4,14 +4,6 @@
 #include <errno.h>
 #include "xrandom.h"
 
-#define _gvs(v) \
-	({ \
-		char buf[22]; \
-		char *f = (sizeof(v) == 4) ? "%" PRId32 : "%" PRId64; \
-		snprintf(buf, sizeof(buf), f, v); \
-		buf; \
-	})
-
 void usage(char *argv[], int pos)
 {
 	fprintf(stderr, "usage: %s seed [nth]\n", argv[0]);

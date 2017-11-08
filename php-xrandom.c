@@ -5,14 +5,6 @@
 #include "xrandom.h"
 #include "php-random.h"
 
-#define _gvs(v) \
-	({ \
-		char buf[22]; \
-		char *f = (sizeof(v) == 4) ? "%" PRId32 : "%" PRId64; \
-		snprintf(buf, sizeof(buf), f, v); \
-		buf; \
-	})
-
 void usage(char *argv[], int pos)
 {
 	fprintf(stderr, "usage: %s seed [nth] [min max]\n", argv[0]);
@@ -31,11 +23,38 @@ double get_arg(char *argv[], int pos)
 	return val;
 }
 
+#define PHP_XRANDOM_PRINT(bits) \
+	({ \
+		printf("php.zts.php.%d.php_rand_r: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_ZTS_PHP, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.zts.freebsd.%d.sys_rand_r: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_ZTS_FREEBSD, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.zts.freebsd.%d.php_rand_r: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_ZTS_FREEBSD_WO_RAND_R, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.zts.freebsd.%d.int_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_ZTS_FREEBSD_WO_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.zts.solaris.%d.sys_rand_r: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_ZTS_SOLARIS, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.zts.solaris.%d.php_rand_r: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_ZTS_SOLARIS_WO_RAND_R, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.zts.solaris.%d.int_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_ZTS_SOLARIS_WO_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.zts.linux.%d.sys_rand_r: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_ZTS_LINUX, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.zts.linux.%d.php_rand_r: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_ZTS_LINUX_WO_RAND_R, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.zts.linux.%d.int_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_ZTS_LINUX_WO_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.freebsd.%d.random: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_FREEBSD_RANDOM, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.solaris.%d.random: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_SOLARIS_RANDOM, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.linux.%d.random: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_LINUX_RANDOM, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.shared.%d.rand48: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_SHARED_RAND48, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.freebsd.%d.rand.sys_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_FREEBSD_RAND, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.freebsd.%d.rand.int_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_FREEBSD_RAND_WO_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.freebsd.%d.rand.php_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_FREEBSD_RAND_PHP_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.solaris.%d.rand.sys_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_SOLARIS_RAND, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.solaris.%d.rand.sys_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_SOLARIS_RAND_WO_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.solaris.%d.rand.sys_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_SOLARIS_RAND_PHP_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.linux.%d.rand.sys_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_LINUX_RAND, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.linux.%d.rand.sys_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_LINUX_RAND_WO_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.linux.%d.rand.sys_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_LINUX_RAND_PHP_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
+	});
+
 int main(int argc, char *argv[])
 {
 	int c, nth;
-	zend_i64 seed64, min64, max64;
-	zend_i32 seed32, min32, max32;
+	iz64 seed64, min64, max64;
+	iz32 seed32, min32, max32;
 	
 	if (argc < 2)
 		usage(argv, 0);
@@ -47,7 +66,7 @@ int main(int argc, char *argv[])
 	if (nth < 0)
 		nth = 0;
 	if (min64 > max64) {
-		zend_i64 temp = min64;
+		iz64 temp = min64;
 		min64 = max64;
 		max64 = temp;
 	}
@@ -56,19 +75,6 @@ int main(int argc, char *argv[])
 	min32 = php_long_32(min64);
 	max32 = php_long_32(max64);
 	
-	printf("freebsd.rand.32: %s\n",   _gvs(php_rand_32(PHP_RAND_FREEBSD_RAND,   seed32, nth, min32, max32)));
-	printf("freebsd.random.32: %s\n", _gvs(php_rand_32(PHP_RAND_FREEBSD_RANDOM, seed32, nth, min32, max32)));
-	printf("freebsd.zend.32: %s\n",   _gvs(php_rand_32(PHP_RAND_FREEBSD_ZEND,   seed32, nth, min32, max32)));
-	printf("linux.rand.32: %s\n",     _gvs(php_rand_32(PHP_RAND_LINUX_RAND,     seed32, nth, min32, max32)));
-	printf("linux.rand_r.32: %s\n",   _gvs(php_rand_32(PHP_RAND_LINUX_RAND_R,   seed32, nth, min32, max32)));
-	printf("linux.zend.32: %s\n",     _gvs(php_rand_32(PHP_RAND_LINUX_ZEND,     seed32, nth, min32, max32)));
-	printf("shared.rand48.32: %s\n",  _gvs(php_rand_32(PHP_RAND_SHARED_RAND48,  seed32, nth, min32, max32)));
-	
-	printf("freebsd.rand.64: %s\n",   _gvs(php_rand_64(PHP_RAND_FREEBSD_RAND,   seed64, nth, min64, max64)));
-	printf("freebsd.random.64: %s\n", _gvs(php_rand_64(PHP_RAND_FREEBSD_RANDOM, seed64, nth, min64, max64)));
-	printf("freebsd.zend.64: %s\n",   _gvs(php_rand_64(PHP_RAND_FREEBSD_ZEND,   seed64, nth, min64, max64)));
-	printf("linux.rand.64: %s\n",     _gvs(php_rand_64(PHP_RAND_LINUX_RAND,     seed64, nth, min64, max64)));
-	printf("linux.rand_r.64: %s\n",   _gvs(php_rand_64(PHP_RAND_LINUX_RAND_R,   seed64, nth, min64, max64)));
-	printf("linux.zend.64: %s\n",     _gvs(php_rand_64(PHP_RAND_LINUX_ZEND,     seed64, nth, min64, max64)));
-	printf("shared.rand48.64: %s\n",  _gvs(php_rand_64(PHP_RAND_SHARED_RAND48,  seed64, nth, min64, max64)));
+	PHP_XRANDOM_PRINT(32);
+	PHP_XRANDOM_PRINT(64);
 }

@@ -52,6 +52,14 @@ void test_linux_rand_r(int len, int seed, int * rv)
 	}
 }
 
+void test_solaris_rand(int len, int seed, int * rv)
+{
+	//solaris_srand(seed);
+	for (int i=0; i < len; i++) {
+		// int rnd = solaris_rand();
+	}
+}
+
 void test_shared_rand48(int len, int seed, long * rv)
 {
 	srand48(seed);
