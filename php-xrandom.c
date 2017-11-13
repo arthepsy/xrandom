@@ -43,11 +43,11 @@ double get_arg(char *argv[], int pos)
 		printf("php.nts.freebsd.%d.rand.int_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_FREEBSD_RAND_WO_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
 		printf("php.nts.freebsd.%d.rand.php_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_FREEBSD_RAND_PHP_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
 		printf("php.nts.solaris.%d.rand.sys_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_SOLARIS_RAND, seed##bits, nth, min##bits, max##bits))); \
-		printf("php.nts.solaris.%d.rand.sys_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_SOLARIS_RAND_WO_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
-		printf("php.nts.solaris.%d.rand.sys_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_SOLARIS_RAND_PHP_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.solaris.%d.rand.int_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_SOLARIS_RAND_WO_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.solaris.%d.rand.php_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_SOLARIS_RAND_PHP_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
 		printf("php.nts.linux.%d.rand.sys_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_LINUX_RAND, seed##bits, nth, min##bits, max##bits))); \
-		printf("php.nts.linux.%d.rand.sys_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_LINUX_RAND_WO_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
-		printf("php.nts.linux.%d.rand.sys_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_LINUX_RAND_PHP_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.linux.%d.rand.int_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_LINUX_RAND_WO_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
+		printf("php.nts.linux.%d.rand.php_rand_max: %s\n", bits, _gvs(php_rand_##bits(PHP_RAND_NTS_LINUX_RAND_PHP_RAND_MAX, seed##bits, nth, min##bits, max##bits))); \
 	});
 
 int main(int argc, char *argv[])
